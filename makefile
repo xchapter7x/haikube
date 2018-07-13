@@ -25,10 +25,10 @@ dep:
 	go get -u github.com/golang/dep/cmd/dep
 	dep ensure
 build-darwin: 
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GOBUILD) -v -o $(BINARY_DARWIN) ./cmd/haikube
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GOBUILD) -v -o build/$(BINARY_DARWIN) ./cmd/haikube
 build-win:
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -v -o $(BINARY_WIN) ./cmd/haikube
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -v -o build/$(BINARY_WIN) ./cmd/haikube
 build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -v -o $(BINARY_UNIX) ./cmd/haikube
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -v -o build/$(BINARY_UNIX) ./cmd/haikube
 
 .PHONY: all test clean build
