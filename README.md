@@ -1,5 +1,7 @@
 # HaikuBe
 
+[![CircleCI](https://circleci.com/gh/xchapter7x/haikube/tree/master.svg?style=svg)](https://circleci.com/gh/xchapter7x/haikube/tree/master)
+
 Inspired by the haiku, but made for kubernetes.
 So, (Haiku) meet (Kube)rnetes in Haikube
 
