@@ -21,6 +21,7 @@ e2e:
 	$(GOTEST) ./test/e2e/... -v
 clean: 
 	$(GOCLEAN)
+	find . -name "*.test" | xargs rm 
 	rm -fr $(BINARY_DIR)
 dep:
 	go get -u github.com/golang/dep/cmd/dep
