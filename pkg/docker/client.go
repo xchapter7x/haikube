@@ -177,7 +177,7 @@ func unzip(src, dest string) error {
 }
 
 func URIDownloader(downloadURI string) (string, error) {
-	out, err := ioutil.TempFile("", "buildpack")
+	out, err := ioutil.TempFile(".", "buildpack")
 	defer out.Close()
 	if err != nil {
 		return "", fmt.Errorf("tmp file create failed: %v", err)
@@ -199,6 +199,5 @@ func URIDownloader(downloadURI string) (string, error) {
 		return "", fmt.Errorf("stat downloaded file failed: %v", err)
 	}
 
-	filePath := fmt.Sprintf("%s%s", os.TempDir(), fileInfo.Name())
-	return filePath, nil
+	return fileInfo.Name(), nil
 }
