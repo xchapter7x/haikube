@@ -49,3 +49,37 @@ env:
 deployment-patch: {}
 service-patch: {}
 ```
+
+## Contributions
+
+### Simply send over a PR or submit an issue
+
+### Running the tests
+```bash
+# run everything
+$ make test
+
+# run units only (no external deps)
+$ make unit
+
+# run e2e tests (will likely require docker and k8s configured on your machine)
+$ make e2e
+
+# run integrations only ( will likely require docker and k8s configured on your machine)
+$ make integrations
+```
+
+### build the binaries
+```bash
+
+# build cross all platform
+$ make build
+
+# build individual platform
+$ make build-(darwin|linux|win)
+```
+
+### updating dependencies
+```bash
+$ make dep
+```
