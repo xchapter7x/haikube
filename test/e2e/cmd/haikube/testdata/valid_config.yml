@@ -1,0 +1,9 @@
+---
+name: unicornapp
+instances: 4
+image: xchapter7x/myapp
+tag: 1.0.0
+baseimage: cloudfoundry/cflinuxfs2
+buildpack: https://github.com/cloudfoundry/go-buildpack/releases/download/v1.8.22/go-buildpack-v1.8.22.zip
+ports:
+  - 80

@@ -2,8 +2,10 @@ package docker
 
 import (
 	"archive/zip"
+	"bufio"
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -53,9 +55,25 @@ func BuildImage(dockerFileReader io.Reader, imagename string) error {
 		log.Fatal(err, " :unable to build docker image")
 	}
 
-	_, err = io.Copy(os.Stdout, imageBuildResponse.Body)
-	if err != nil {
-		log.Fatal(err, " :unable to read image build response")
+	bodyReader := bufio.NewReader(imageBuildResponse.Body)
+	for {
+		line, _, err := bodyReader.ReadLine()
+		if err != nil {
+			break
+		}
+
+		m := struct {
+			ErrorDetail interface{} `json:"errorDetail"`
+			Stream      interface{} `json:"stream"`
+		}{}
+		json.Unmarshal(line, &m)
+		if m.Stream != nil {
+			fmt.Fprint(os.Stdout, m.Stream)
+		}
+
+		if m.ErrorDetail != nil {
+			return fmt.Errorf(fmt.Sprint(m.ErrorDetail))
+		}
 	}
 
 	return nil

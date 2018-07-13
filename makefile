@@ -12,13 +12,13 @@ BINARY_DARWIN=$(BINARY_NAME)_osx
 
 all: test build
 build: build-darwin build-win build-linux 
-test: unit integration	
+test: unit integration e2e
 unit: 
 	$(GOTEST) ./pkg/... -v
 integration: 
-	$(GOTEST) ./test/integration/... -v
+	GOCACHE=off $(GOTEST) ./test/integration/... -v
 e2e: 
-	$(GOTEST) ./test/e2e/... -v
+	GOCACHE=off $(GOTEST) ./test/e2e/... -v
 clean: 
 	$(GOCLEAN)
 	find . -name "*.test" | xargs rm 
