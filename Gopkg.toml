@@ -24,6 +24,11 @@
 #   go-tests = true
 #   unused-packages = true
 #
+
+[[constraint]]
+  name = "github.com/onsi/gomega"
+  branch = "master"
+
 [[constraint]]
   name = "github.com/jhoonb/archivex"
   branch = "master"
