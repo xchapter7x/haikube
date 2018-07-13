@@ -16,7 +16,9 @@ test: unit integration
 unit: 
 	$(GOTEST) ./pkg/... -v
 integration: 
-	$(GOTEST) ./test/... -v
+	$(GOTEST) ./test/integration/... -v
+e2e: 
+	$(GOTEST) ./test/e2e/... -v
 clean: 
 	$(GOCLEAN)
 	rm -fr $(BINARY_DIR)
