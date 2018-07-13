@@ -21,6 +21,9 @@ clean:
 	rm -f $(BINARY_DARWIN)
 	rm -f $(BINARY_UNIX)
 	rm -f $(BINARY_WIN)
+dep:
+	go get -u github.com/golang/dep/cmd/dep
+	dep ensure
 build-darwin: 
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GOBUILD) -v -o $(BINARY_DARWIN) ./cmd/haikube
 build-win:
