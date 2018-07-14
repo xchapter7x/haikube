@@ -87,7 +87,14 @@ func BuildImage(dockerFileReader io.Reader, imagename string) error {
 // as well as a function which can be used to cleanup any tmp
 // dir created to store buildpacks when they are dloaded & unzipped
 // it will also return an error if anything goes wrong
-func CreateDockerfile(buildpackURI, baseImage, port, codepath string, downloader func(string) (string, error)) (io.Reader, func(), error) {
+func CreateDockerfile(
+	buildpackURI,
+	baseImage,
+	port,
+	codepath string,
+	envmap map[string]string,
+	downloader func(string) (string, error),
+) (io.Reader, func(), error) {
 	buildpackpath, err := downloader(buildpackURI)
 	if err != nil {
 		return nil, func() {}, fmt.Errorf("failed downloading: %v", err)
@@ -115,11 +122,12 @@ RUN mkdir /app /cache /deps || true
 WORKDIR /app
 COPY %s /app
 RUN mv %s /buildpack
+%s
 RUN /buildpack/bin/detect /app
 RUN /buildpack/bin/compile /app /cache
 RUN /buildpack/bin/release
 EXPOSE %s
-`, baseImage, codepath, tempBuildpackUnzipped, port))
+`, baseImage, codepath, tempBuildpackUnzipped, dockerFileEnvCmdFromMap(envmap), port))
 
 	} else {
 		fileBytes = []byte(fmt.Sprintf(`
@@ -128,16 +136,25 @@ RUN mkdir /app /cache /deps || true
 WORKDIR /app
 ADD %s /app 
 RUN mv %s /buildpack
-RUN CF_STACK=cflinuxfs2 /buildpack/bin/detect /app
-RUN CF_STACK=cflinuxfs2 /buildpack/bin/supply /app /cache /deps 0
-RUN CF_STACK=cflinuxfs2 /buildpack/bin/finalize /app /cache /deps 0
-RUN CF_STACK=cflinuxfs2 /buildpack/bin/release
+%s
+RUN /buildpack/bin/detect /app
+RUN /buildpack/bin/supply /app /cache /deps 0
+RUN /buildpack/bin/finalize /app /cache /deps 0
+RUN /buildpack/bin/release
 EXPOSE %s
-`, baseImage, codepath, tempBuildpackUnzipped, port))
+`, baseImage, codepath, tempBuildpackUnzipped, dockerFileEnvCmdFromMap(envmap), port))
 	}
 
 	r := bytes.NewReader(fileBytes)
 	return r, cleanBuildpackTmp, nil
+}
+
+func dockerFileEnvCmdFromMap(envmap map[string]string) string {
+	resp := ""
+	for k, v := range envmap {
+		resp += fmt.Sprintf("ENV %s=%s\n", k, v)
+	}
+	return resp
 }
 
 func unzip(src, dest string) error {

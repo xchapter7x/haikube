@@ -51,6 +51,7 @@ func main() {
 			cfg.BaseImage,
 			fmt.Sprintf("%v", cfg.Ports[0]),
 			".",
+			cfg.Env,
 			docker.URIDownloader,
 		)
 		defer cleanup()

@@ -7,3 +7,6 @@ baseimage: cloudfoundry/cflinuxfs2
 buildpack: https://github.com/cloudfoundry/go-buildpack/releases/download/v1.8.22/go-buildpack-v1.8.22.zip
 ports:
   - 80
+env:
+  CF_STACK: cflinuxfs2
+  GOPACKAGENAME: main
