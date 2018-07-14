@@ -19,8 +19,7 @@ func TestHaikube(t *testing.T) {
 	}
 
 	t.Run("hk build -f xxxx.yml", func(t *testing.T) {
-		t.Skip("this test is doesnt have all of its testdata sets yet")
-		command := exec.Command(pathToHKCLI, "build", "-f", "./testdata/valid_config.yml")
+		command := exec.Command(pathToHKCLI, "build", "-c", "./testdata/valid_config.yml", "-s", "./testdata/fakerepo")
 		session, err := gexec.Start(command, os.Stdout, os.Stderr)
 		if err != nil {
 			t.Fatalf("failed running command: %v", err)
