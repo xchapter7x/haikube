@@ -50,9 +50,13 @@ func BuildImage(dockerFileReader io.Reader, imagename string) error {
 			Remove:     false,
 		},
 	)
-	defer imageBuildResponse.Body.Close()
+	defer func() {
+		if imageBuildResponse.Body != nil {
+			imageBuildResponse.Body.Close()
+		}
+	}()
 	if err != nil {
-		log.Fatal(err, " :unable to build docker image")
+		log.Fatal("unable to build docker image: ", err)
 	}
 
 	bodyReader := bufio.NewReader(imageBuildResponse.Body)
@@ -124,10 +128,10 @@ RUN mkdir /app /cache /deps || true
 WORKDIR /app
 ADD %s /app 
 RUN mv %s /buildpack
-RUN /buildpack/bin/detect /app
-RUN /buildpack/bin/supply /app /cache /deps
-RUN /buildpack/bin/finalize /app /cache /deps
-RUN /buildpack/bin/release
+RUN CF_STACK=cflinuxfs2 /buildpack/bin/detect /app
+RUN CF_STACK=cflinuxfs2 /buildpack/bin/supply /app /cache /deps 0
+RUN CF_STACK=cflinuxfs2 /buildpack/bin/finalize /app /cache /deps 0
+RUN CF_STACK=cflinuxfs2 /buildpack/bin/release
 EXPOSE %s
 `, baseImage, codepath, tempBuildpackUnzipped, port))
 	}
