@@ -16,9 +16,9 @@ jobs:
       - persist_to_workspace:
           root: build 
           paths:
-            - haihube.exe 
-            - haihube_osx 
-            - haihube_unix 
+            - hk.exe 
+            - hk_osx 
+            - hk_unix 
   release:
     docker:
       - image: socialengine/github-release
