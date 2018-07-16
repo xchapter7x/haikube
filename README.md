@@ -61,13 +61,13 @@ env:
 
 ### some local env vars you can set 
 
-`DOCKER_HOST`: to set the url to the docker server.
-`DOCKER_API_VERSION`: to set the version of the API to reach, leave empty for latest.
-`DOCKER_CERT_PATH`: to load the TLS certificates from.
-`DOCKER_TLS_VERIFY`: to enable or disable TLS verification, off by default.
-`DOCKER_USERNAME`: to set which account to use when uploading to docker registry.
-`DOCKER_PASSWORD`: to set password of docker registry account.
-`DOCKER_REGISTRY_URL`: to set a private registry host (optional: dockerhub is used by default)
+- `DOCKER_HOST`: to set the url to the docker server. **(optional)**
+- `DOCKER_API_VERSION`: to set the version of the API to reach, leave empty for latest. **(optional)**
+- `DOCKER_CERT_PATH`: to load the TLS certificates from. **(optional)**
+- `DOCKER_TLS_VERIFY`: to enable or disable TLS verification, off by default. **(optional)**
+- `DOCKER_USERNAME`: to set which account to use when uploading to docker registry. **(required for upload calls)**
+- `DOCKER_PASSWORD`: to set password of docker registry account. **(required for upload calls)**
+- `DOCKER_REGISTRY_URL`: to set a private registry host (optional: dockerhub is used by default) **(optional)**
 
 
 ## Contributions
