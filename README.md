@@ -36,11 +36,11 @@ https://github.com/xchapter7x/haikube/releases/latest
 
 ```bash
 # will build the image using a buildpack
-$ "hk build -c haikube.yml -s pathtosource
+$ hk build -c haikube.yml -s pathtosource
 
 
 # will build the image & upload it to docker registry
-$ "hk upload -c haikube.yml -s pathtosource
+$ hk upload -c haikube.yml -s pathtosource
 ```
 
 ### sample .haikube.yaml
