@@ -32,5 +32,7 @@ build-win:
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -v -o $(BINARY_DIR)/$(BINARY_WIN) ./cmd/haikube
 build-linux:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -v -o $(BINARY_DIR)/$(BINARY_UNIX) ./cmd/haikube
+release:
+	./bin/create_new_release.sh
 
 .PHONY: all test clean build

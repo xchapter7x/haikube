@@ -14,6 +14,10 @@ jobs:
       - run: make test 
       - run: make build
       - persist_to_workspace:
+          root: bin 
+          paths:
+            - create_new_release.sh 
+      - persist_to_workspace:
           root: build 
           paths:
             - hk.exe 
@@ -25,8 +29,10 @@ jobs:
     working_directory: /go/src/github.com/xchapter7x/haikube
     steps:
       - attach_workspace:
+          at: bin 
+      - attach_workspace:
           at: build 
-      - run: ls -lha
+      - run: ./bin/create_new_release.sh 
 workflows:
   version: 2
   build-and-release:
