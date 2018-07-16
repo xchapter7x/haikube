@@ -1,4 +1,8 @@
 # HaikuBe
+### If you like the Cloud Foundry and Heroku 'push' experiences, but are using Kubernetes, try this!
+
+---
+
 
 [![CircleCI](https://circleci.com/gh/xchapter7x/haikube/tree/master.svg?style=svg)](https://circleci.com/gh/xchapter7x/haikube/tree/master)
 
