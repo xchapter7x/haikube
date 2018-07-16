@@ -24,7 +24,7 @@ func TestHaikube(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed running command: %v", err)
 		}
-		session.Wait(60 * time.Second)
+		session.Wait(120 * time.Second)
 		if session.ExitCode() != 0 {
 			t.Errorf("call failed: %v %v %v", session.ExitCode(), string(session.Out.Contents()), string(session.Err.Contents()))
 		}
