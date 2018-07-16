@@ -21,9 +21,9 @@ https://github.com/xchapter7x/haikube/releases/latest
 
 ## features
 - `build`: build your container using a buildpack
-- `push`: push your container to dockerhub
+- `upload`: push your container to dockerhub
 - `deploy`: generate the k8s deployment and deploy it
-- `make`: push will create a docker image using your source code and 
+- `push`: push will create a docker image using your source code and 
         a buildpack. it will then upload it to a docker registry.
         after that it will generate a service manifest and a deployment
         manifest. finally it will apply those manifests to your k8s cluster.
@@ -31,8 +31,12 @@ https://github.com/xchapter7x/haikube/releases/latest
 ## samples
 
 ```bash
-# will build the image push it to docker registry and deploy the app to k8s
-$ haikube build -f file.yaml
+# will build the image using a buildpack
+$ "hk build -c haikube.yml -s pathtosource
+
+
+# will build the image & upload it to docker registry
+$ "hk upload -c haikube.yml -s pathtosource
 ```
 
 ### sample .haikube.yaml
@@ -40,19 +44,17 @@ $ haikube build -f file.yaml
 ```yaml
 ---
 name: unicornapp
-org: xchapter7x
+instances: 4
+image: xchapter7x/myapp
 tag: 1.0.0
-base: cloudfoundry/cflinuxfs2
+baseimage: cloudfoundry/cflinuxfs2
 buildpack: https://github.com/cloudfoundry/go-buildpack/releases/download/v1.8.22/go-buildpack-v1.8.22.zip
 ports:
   - 80
 env:
-  - name: ENVKEY
-    value: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-  - name: BLAH
-    value: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-deployment-patch: {}
-service-patch: {}
+  CF_STACK: cflinuxfs2
+  GOPACKAGENAME: main
+
 ```
 
 ## HK Usage
