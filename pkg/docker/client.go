@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -19,7 +20,46 @@ import (
 	"github.com/jhoonb/archivex"
 )
 
-func PushImage() error {
+//PushImage - takes the image name as an argument in the format of
+/// <org>/<name>:<tag>
+func PushImage(imageName string) error {
+	cli, err := docker.NewEnvClient()
+	if err != nil {
+		return err
+	}
+
+	username := os.Getenv("DOCKER_USERNAME")
+	password := os.Getenv("DOCKER_PASSWORD")
+	registryURL := os.Getenv("DOCKER_REGISTRY_URL")
+	if username == "" || password == "" {
+		return fmt.Errorf("you didnt set a DOCKER_USERNAME or DOCKER_PASSWORD")
+	}
+
+	authConfig := types.AuthConfig{
+		Username: username,
+		Password: password,
+	}
+	if registryURL != "" {
+		authConfig.ServerAddress = registryURL
+	}
+
+	encodedJSON, err := json.Marshal(authConfig)
+	if err != nil {
+		return err
+	}
+
+	authStr := base64.URLEncoding.EncodeToString(encodedJSON)
+	out, err := cli.ImagePush(context.Background(), imageName, types.ImagePushOptions{RegistryAuth: authStr})
+	if err != nil {
+		return err
+	}
+
+	defer out.Close()
+	err = parseReader(out)
+	if err != nil {
+		return fmt.Errorf("failed reading response body: %v", err)
+	}
+
 	return nil
 }
 
@@ -33,6 +73,10 @@ func BuildImage(dockerFileReader io.Reader, imagename string) error {
 	tar.AddAll(".", false)
 	tar.Close()
 	dockerBuildContext, err := os.Open(tarname + ".tar")
+	if err != nil {
+		return err
+	}
+
 	defer dockerBuildContext.Close()
 	defer os.Remove(tarname + ".tar")
 	cli, err := docker.NewEnvClient()
@@ -59,7 +103,16 @@ func BuildImage(dockerFileReader io.Reader, imagename string) error {
 		log.Fatal("unable to build docker image: ", err)
 	}
 
-	bodyReader := bufio.NewReader(imageBuildResponse.Body)
+	err = parseReader(imageBuildResponse.Body)
+	if err != nil {
+		return fmt.Errorf("failed reading response body: %v", err)
+	}
+
+	return nil
+}
+
+func parseReader(rdr io.Reader) error {
+	bodyReader := bufio.NewReader(rdr)
 	for {
 		line, _, err := bodyReader.ReadLine()
 		if err != nil {
@@ -79,7 +132,6 @@ func BuildImage(dockerFileReader io.Reader, imagename string) error {
 			return fmt.Errorf(fmt.Sprint(m.ErrorDetail))
 		}
 	}
-
 	return nil
 }
 

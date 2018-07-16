@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
+	"strings"
 	"testing"
 
 	uuid "github.com/satori/go.uuid"
@@ -42,8 +43,27 @@ COPY . /app`)
 	})
 
 	t.Run("Upload image to docker repo", func(t *testing.T) {
-
+		t.Run("should fail if username or password is not set", func(t *testing.T) {
+			restoreEnv := clearEnvironment()
+			defer restoreEnv()
+			err := dclient.PushImage("alpine")
+			if err == nil {
+				t.Errorf("we expect this to fail if docker user/pass are not set: %v", err)
+			}
+		})
 	})
+}
+
+func clearEnvironment() func() {
+	environ := os.Environ()
+	os.Clearenv()
+	return func() {
+		os.Clearenv()
+		for _, e := range environ {
+			arr := strings.Split(e, "=")
+			os.Setenv(arr[0], arr[1])
+		}
+	}
 }
 
 func fakeFailureDownloader(downloadURI string) (string, error) {

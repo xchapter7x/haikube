@@ -18,13 +18,25 @@ func TestHaikube(t *testing.T) {
 		t.Fatalf("build failed: %v", err)
 	}
 
-	t.Run("hk build -f xxxx.yml", func(t *testing.T) {
+	t.Run("hk build -c haikube.yml -s pathtosource", func(t *testing.T) {
 		command := exec.Command(pathToHKCLI, "build", "-c", "./testdata/valid_config.yml", "-s", "./testdata/fakerepo")
 		session, err := gexec.Start(command, os.Stdout, os.Stderr)
 		if err != nil {
 			t.Fatalf("failed running command: %v", err)
 		}
 		session.Wait(120 * time.Second)
+		if session.ExitCode() != 0 {
+			t.Errorf("call failed: %v %v %v", session.ExitCode(), string(session.Out.Contents()), string(session.Err.Contents()))
+		}
+	})
+
+	t.Run("hk upload -c haikube.yml -s pathtosource", func(t *testing.T) {
+		command := exec.Command(pathToHKCLI, "upload", "-c", "./testdata/valid_config.yml", "-s", "./testdata/fakerepo")
+		session, err := gexec.Start(command, os.Stdout, os.Stderr)
+		if err != nil {
+			t.Fatalf("failed running command: %v", err)
+		}
+		session.Wait(240 * time.Second)
 		if session.ExitCode() != 0 {
 			t.Errorf("call failed: %v %v %v", session.ExitCode(), string(session.Out.Contents()), string(session.Err.Contents()))
 		}
