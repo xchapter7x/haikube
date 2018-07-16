@@ -13,6 +13,11 @@ i do not care how
             (https://content.pivotal.io/blog/pivotal-cloud-foundry-s-roadmap-for-2016)
 ```
 
+## Download
+
+### Binaries available for linux, osx & windows
+https://github.com/xchapter7x/haikube/releases/latest
+
 
 ## features
 - `build`: build your container using a buildpack
