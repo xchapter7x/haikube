@@ -7,15 +7,6 @@ import (
 )
 
 func TestK8sClient(t *testing.T) {
-	t.Run("create DeploymentsClient", func(t *testing.T) {
-		t.Run("should create a client from default kubeconfig", func(t *testing.T) {
-			_, err := k8s.NewDeploymentsClient("")
-			if err != nil {
-				t.Errorf("we expect a client but got error: %v", err)
-			}
-		})
-	})
-
 	t.Run("create deployment", func(t *testing.T) {
 		controlName := "my-fake-name"
 		controlImage := "my-fake-image"
