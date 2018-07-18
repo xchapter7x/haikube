@@ -49,7 +49,7 @@ func NewDeploymentsClient(kubeconfig string) (DeploymentInterface, error) {
 	return deploymentsClient, nil
 }
 
-func NewDeployment(name, image string, port int32) Deployment {
+func NewDeployment(name, image, buildpack string, port int32) Deployment {
 	deployment := Deployment{
 		Deployment: &appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
@@ -59,13 +59,15 @@ func NewDeployment(name, image string, port int32) Deployment {
 				Replicas: int32Ptr(2),
 				Selector: &metav1.LabelSelector{
 					MatchLabels: map[string]string{
-						"app": name,
+						"app":       name,
+						"buildpack": buildpack,
 					},
 				},
 				Template: apiv1.PodTemplateSpec{
 					ObjectMeta: metav1.ObjectMeta{
 						Labels: map[string]string{
-							"app": name,
+							"app":       name,
+							"buildpack": buildpack,
 						},
 					},
 					Spec: apiv1.PodSpec{
