@@ -17,11 +17,21 @@ import (
 )
 
 func TestDeployApp(t *testing.T) {
-	t.Run("should create a kubernetes deployment", func(t *testing.T) {
-		if v := os.Getenv("K8S_CLUSTER"); strings.ToLower(v) == "false" {
-			t.Skip(`skipping k8s deployment integration b/c you do not have a configured k8s. 
+	if v := os.Getenv("K8S_CLUSTER"); strings.ToLower(v) == "false" {
+		t.Skip(`skipping k8s deployment integration b/c you do not have a configured k8s. 
 							please set env var K8S_CLUSTER=true if you have a configured environment`)
-		}
+	}
+
+	t.Run("create DeploymentsClient", func(t *testing.T) {
+		t.Run("should create a client from default kubeconfig", func(t *testing.T) {
+			_, err := k8s.NewDeploymentsClient("")
+			if err != nil {
+				t.Errorf("we expect a client but got error: %v", err)
+			}
+		})
+	})
+
+	t.Run("should create a kubernetes deployment", func(t *testing.T) {
 		controlDeploymentName := "demo-deployment"
 		config, err := clientcmd.BuildConfigFromFlags("", filepath.Join(homedir.HomeDir(), ".kube", "config"))
 		if err != nil {
