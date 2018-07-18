@@ -93,6 +93,11 @@ $ make e2e
 $ make integrations
 ```
 
+#### Test related toggles
+- `K8S_CLUSTER`: setting this var to `false` when running tests will disable integration tests and e2e tests which require a kubernetes cluster to succeed. If you do not have a k8s cluster to test against, or are not testing functionality that requires a cluster, set this variable to false.
+
+
+
 ### build the binaries
 ```bash
 

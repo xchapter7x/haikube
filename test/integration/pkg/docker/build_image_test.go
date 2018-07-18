@@ -19,7 +19,7 @@ func TestBuildImage(t *testing.T) {
 		}
 
 		testImageName := "myimage:1.2.3"
-		r := bytes.NewReader([]byte(`FROM ubuntu`))
+		r := bytes.NewReader([]byte(`FROM busybox`))
 		err = dclient.BuildImage(r, testImageName)
 		if err != nil {
 			t.Fatalf("build image failed: %v", err)
