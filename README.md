@@ -17,6 +17,16 @@ i do not care how
             (https://content.pivotal.io/blog/pivotal-cloud-foundry-s-roadmap-for-2016)
 ```
 
+## Overview
+
+- haikube takes the same approach as cloudfoundry & heroku and uses buildpacks to create a working image from just your code
+  - buildpacks can detect if your code is supported, and then can create a fully functional application container image from just your code
+  - buildpacks will run any required scripts/processes to make your code ready to be deployed (ie. ruby bundle, go dep, etc)
+- haikube can use any dockerhost its configured for to build the container images
+- haikube can store the container image in dockerhub by default, but can be configured to use any docker registry
+- haikube can create a k8s deployment using the created docker image
+- haikube can create a k8s service which points to the created deployment
+
 ## Download
 
 ### Binaries available for linux, osx & windows
