@@ -22,6 +22,8 @@ var (
 	deploy          = kingpin.Command("deploy", "Deploy your application container to kubernetes.")
 	deployConfig    = deploy.Flag("config", "config file path").Short('c').Required().String()
 	push            = kingpin.Command("push", "Build Push and Deploy your code")
+	pushConfig      = push.Flag("config", "config file path").Short('c').Required().String()
+	pushSourceDir   = push.Flag("source", "path to your code").Short('s').Required().String()
 )
 
 func main() {
@@ -38,6 +40,15 @@ func main() {
 		}
 	case deploy.FullCommand():
 		err := createDeployment(*deployConfig)
+		if err != nil {
+			log.Panicf("create deployment failed: %v", err)
+		}
+	case push.FullCommand():
+		err := uploadDockerImage(*pushConfig, *pushSourceDir)
+		if err != nil {
+			log.Panicf("uploadDockerImage failed: %v", err)
+		}
+		err = createDeployment(*pushConfig)
 		if err != nil {
 			log.Panicf("create deployment failed: %v", err)
 		}
@@ -98,7 +109,14 @@ func buildDockerImage(config, source string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("absolute path to your code not found: %v", err)
 	}
+	originalPath, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("cant find current path: %v", err)
+	}
 
+	defer func() {
+		os.Chdir(originalPath)
+	}()
 	err = os.Chdir(sourcePath)
 	if err != nil {
 		return "", fmt.Errorf("chdir failed: %v", err)
