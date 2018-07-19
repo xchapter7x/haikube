@@ -122,6 +122,12 @@ $ make build-(darwin|linux|win)
 $ make dep
 ```
 
+## Missing Functionality
+- Does not yet create a service to front the created deployment in k8s
+- Does not yet allow for configuration of deployment/service in k8s
+- Does not yet allow for deployment of private container images
+- ... Lots missing, this project is only a few days old :)
+
 ## Similar tools in the space
 - [Helm](https://helm.sh) : The Kubernetes Package Manager
   - helm is a great tool, but it plays in a different space than haikube.
