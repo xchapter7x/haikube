@@ -1,5 +1,7 @@
 theme: jekyll-theme-cayman
-show_downloads: false
+show_downloads: true
 google_analytics:
 github:
-  repository_url: https://github.com/xchapter7x/haikube/releases/latest
+  osx: https://github.com/xchapter7x/haikube/releases/download/v0.3.0/hk_osx
+  win: https://github.com/xchapter7x/haikube/releases/download/v0.3.0/hk.exe
+  linux: https://github.com/xchapter7x/haikube/releases/download/v0.3.0/hk_unix
