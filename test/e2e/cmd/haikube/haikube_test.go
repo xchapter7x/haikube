@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"testing"
 	"time"
 
@@ -46,6 +47,11 @@ func TestHaikube(t *testing.T) {
 	})
 
 	t.Run("hk deploy -c ./testdata/valid_config.yml", func(t *testing.T) {
+		if v := os.Getenv("K8S_CLUSTER"); strings.ToLower(v) == "false" {
+			t.Skip(`skipping k8s deployment integration b/c you do not have a configured k8s. 
+							please set env var K8S_CLUSTER=true if you have a configured environment`)
+		}
+
 		command := exec.Command(pathToHKCLI, "deploy", "-c", "./testdata/valid_config.yml")
 		session, err := gexec.Start(command, os.Stdout, os.Stderr)
 		if err != nil {
