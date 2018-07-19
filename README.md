@@ -24,7 +24,7 @@ i do not care how
 
 ## Overview
 
-- haikube takes the same approach as cloudfoundry & heroku and uses buildpacks to create a working image from just your code
+- haikube takes the same approach as cloudfoundry & heroku and uses [buildpacks](https://docs.cloudfoundry.org/buildpacks/) to create a working image from just your code
   - buildpacks can detect if your code is supported, and then can create a fully functional application container image from just your code
   - buildpacks will run any required scripts/processes to make your code ready to be deployed (ie. ruby bundle, go dep, etc)
 - haikube can use any dockerhost its configured for to build the container images
