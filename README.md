@@ -20,7 +20,7 @@ i do not care how
 ## Download
 
 ### Binaries available for linux, osx & windows
-https://github.com/xchapter7x/haikube/releases/latest
+### [DOWNLOAD HERE](https://github.com/xchapter7x/haikube/releases/latest)
 
 ## Overview
 
