@@ -8,6 +8,7 @@ import (
 
 	"github.com/xchapter7x/haikube/pkg/docker"
 	"github.com/xchapter7x/haikube/pkg/haikube"
+	"github.com/xchapter7x/haikube/pkg/k8s"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -19,6 +20,7 @@ var (
 	uploadConfig    = upload.Flag("config", "config file path").Short('c').Required().String()
 	uploadSourceDir = upload.Flag("source", "path to your code").Short('s').Required().String()
 	deploy          = kingpin.Command("deploy", "Deploy your application container to kubernetes.")
+	deployConfig    = deploy.Flag("config", "config file path").Short('c').Required().String()
 	push            = kingpin.Command("push", "Build Push and Deploy your code")
 )
 
@@ -34,7 +36,39 @@ func main() {
 		if err != nil {
 			log.Panicf("uploadDockerImage failed: %v", err)
 		}
+	case deploy.FullCommand():
+		err := createDeployment(*deployConfig)
+		if err != nil {
+			log.Panicf("create deployment failed: %v", err)
+		}
 	}
+}
+
+func createDeployment(config string) error {
+	cfg := new(haikube.Config)
+	yamlFilePath, err := filepath.Abs(config)
+	if err != nil {
+		return fmt.Errorf("absolute path to config not found: %v", err)
+	}
+
+	f, err := os.Open(yamlFilePath)
+	if err != nil {
+		return fmt.Errorf("file read failed %v", err)
+	}
+
+	cfg.Parse(f)
+	client, err := k8s.NewDeploymentsClient("")
+	if err != nil {
+		return fmt.Errorf("failed creating deployment: %v", err)
+	}
+
+	deployment := k8s.NewDeployment(
+		cfg.Name,
+		fmt.Sprintf("%s:%s", cfg.Image, cfg.Tag),
+		filepath.Base(cfg.Buildpack),
+		int32(cfg.Ports[0]),
+	)
+	return k8s.DeployApp(deployment, client)
 }
 
 func uploadDockerImage(config, source string) error {
