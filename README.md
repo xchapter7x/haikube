@@ -17,6 +17,11 @@ i do not care how
             (https://content.pivotal.io/blog/pivotal-cloud-foundry-s-roadmap-for-2016)
 ```
 
+## Download
+
+### Binaries available for linux, osx & windows
+https://github.com/xchapter7x/haikube/releases/latest
+
 ## Overview
 
 - haikube takes the same approach as cloudfoundry & heroku and uses buildpacks to create a working image from just your code
@@ -26,12 +31,6 @@ i do not care how
 - haikube can store the container image in dockerhub by default, but can be configured to use any docker registry
 - haikube can create a k8s deployment using the created docker image
 - haikube can create a k8s service which points to the created deployment
-
-## Download
-
-### Binaries available for linux, osx & windows
-https://github.com/xchapter7x/haikube/releases/latest
-
 
 ## features
 - `build`: build your container using a buildpack
@@ -122,3 +121,16 @@ $ make build-(darwin|linux|win)
 ```bash
 $ make dep
 ```
+
+## Similar tools in the space
+- [Helm](https://helm.sh) : The Kubernetes Package Manager
+  - helm is a great tool, but it plays in a different space than haikube.
+  - helm is meant to bring structure to templatizing, versioning and distributing your k8s deployments. Haikube explicitely is meant for those
+  who do not care how their code is run on k8s, they just want to push it and have it work. One can use haikube to generate an image, which gets
+  deployed via a helm chart.
+- [Skaffold](https://github.com/GoogleContainerTools/skaffold) : Skaffold is a command line tool that facilitates continuous development for Kubernetes applications
+  - More similar to haikube, but takes a different approach. Skaffold is a sort of framework to organize and structure how you create your images, 
+  what your deployments, services, etc look like. You can even use it with helm. Haikube isnt a framework, it assumes you dont want to worry about
+  how to build your images or architect your deployments. Haikube forms its own opinion, so you don't have to, where as Skaffold gives engineers
+  who wish to build everything themselves a standard structure and tooling to play safely. It's a great tool, but meets the needs of a different 
+  user persona.
