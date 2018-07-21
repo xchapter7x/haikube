@@ -178,8 +178,9 @@ RUN mv %s /buildpack
 RUN /buildpack/bin/detect /app
 RUN /buildpack/bin/compile /app /cache
 RUN /buildpack/bin/release
+ENV PORT %s 
 EXPOSE %s
-`, baseImage, codepath, tempBuildpackUnzipped, dockerFileEnvCmdFromMap(envmap), port))
+`, baseImage, codepath, tempBuildpackUnzipped, dockerFileEnvCmdFromMap(envmap), port, port))
 
 	} else {
 		fileBytes = []byte(fmt.Sprintf(`
@@ -193,8 +194,9 @@ RUN /buildpack/bin/detect /app
 RUN /buildpack/bin/supply /app /cache /deps 0
 RUN /buildpack/bin/finalize /app /cache /deps 0
 RUN /buildpack/bin/release
+ENV PORT %s 
 EXPOSE %s
-`, baseImage, codepath, tempBuildpackUnzipped, dockerFileEnvCmdFromMap(envmap), port))
+`, baseImage, codepath, tempBuildpackUnzipped, dockerFileEnvCmdFromMap(envmap), port, port))
 	}
 
 	r := bytes.NewReader(fileBytes)
