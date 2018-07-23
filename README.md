@@ -35,11 +35,11 @@ i do not care how
 ## features
 - `build`: build your container using a buildpack
 - `upload`: push your container to dockerhub
-- `deploy`: generate the k8s deployment and deploy it
+- `deploy`: install a helm chart which creates deployment, service & ingress for your container
 - `push`: push will create a docker image using your source code and 
         a buildpack. it will then upload it to a docker registry.
-        after that it will generate a service manifest and a deployment
-        manifest. finally it will apply those manifests to your k8s cluster.
+        after that it will install a helm chart using your container
+        which creates a deployment, service and ingress.
 
 ## samples
 
@@ -59,6 +59,7 @@ $ hk upload -c haikube.yml -s pathtosource
 name: unicornapp
 instances: 4
 image: xchapter7x/myapp
+cmd: ./bin/main
 tag: 1.0.0
 baseimage: cloudfoundry/cflinuxfs2
 buildpack: https://github.com/cloudfoundry/go-buildpack/releases/download/v1.8.22/go-buildpack-v1.8.22.zip
