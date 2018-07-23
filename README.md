@@ -44,9 +44,11 @@ i do not care how
 
 ```bash
 # will build the image using a buildpack
+# upload the image to docker hub
+# install a helm chart with deployment, service, ingress using the created image
 $ hk push -c haikube.yml -s pathtosource
 
-# will build the image using a buildpack
+# install a helm chart with deployment, service, ingress using the created image
 $ hk deploy -c haikube.yml
 
 # will build the image using a buildpack
