@@ -29,8 +29,7 @@ i do not care how
   - buildpacks will run any required scripts/processes to make your code ready to be deployed (ie. ruby bundle, go dep, etc)
 - haikube can use any dockerhost its configured for to build the container images
 - haikube can store the container image in dockerhub by default, but can be configured to use any docker registry
-- haikube can create a k8s deployment using the created docker image
-- haikube can create a k8s service which points to the created deployment
+- haikube can install a helm chart (deployment, service, ingress) using the created docker image
 
 ## features
 - `build`: build your container using a buildpack
@@ -45,8 +44,13 @@ i do not care how
 
 ```bash
 # will build the image using a buildpack
-$ hk build -c haikube.yml -s pathtosource
+$ hk push -c haikube.yml -s pathtosource
 
+# will build the image using a buildpack
+$ hk deploy -c haikube.yml
+
+# will build the image using a buildpack
+$ hk build -c haikube.yml -s pathtosource
 
 # will build the image & upload it to docker registry
 $ hk upload -c haikube.yml -s pathtosource
@@ -124,12 +128,19 @@ $ make dep
 ```
 
 ## Missing Functionality
-- Does not yet create a service to front the created deployment in k8s
-- Does not yet allow for configuration of deployment/service in k8s
+- Instance count still needs to take effect in helm installation
+- Does not yet allow for configuration of helm chart used 
 - Does not yet allow for deployment of private container images
 - ... Lots missing, this project is only a few days old :)
 
 ## Similar tools in the space
+- [Draft](https://draft.sh) : Simple app development & deployment - into any Kubernetes cluster.
+  - Draft is a really interesting tool, Its intent, as stated on the site and in its name, is to target a fast feedback loop for WIP code. This is very different
+    from haikube, in that, haikube is looking to be used as the mechanism to deploy your production code onto kubernetes with as little friction as possible.
+  - Draft makes it easy to build applications that run on Kubernetes. 
+  - Draft targets the "inner loop" of a developer's workflow: as they hack on code, but before code is committed to version control.
+  - Uses it's own `packs` to generate images. Haikube uses cf buildpacks.
+  - Uses `helm` to install the apps on k8s. Haikube also uses helm, but hides the details and removes the dependencies, so no configs or charts to worry about.
 - [Helm](https://helm.sh) : The Kubernetes Package Manager
   - helm is a great tool, but it plays in a different space than haikube.
   - helm is meant to bring structure to templatizing, versioning and distributing your k8s deployments. Haikube explicitely is meant for those

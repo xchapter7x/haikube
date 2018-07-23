@@ -137,7 +137,7 @@ func RunDockerfileInTmpImage(dockerFileReader io.Reader) error {
 				fmt.Println("cleaning up", imageID)
 				_, err := cli.ImageRemove(context.Background(), imageID, types.ImageRemoveOptions{
 					PruneChildren: true,
-					Force:         false,
+					Force:         true,
 				})
 				if err != nil {
 					return fmt.Errorf("failed to remove image: %v", err)
@@ -176,8 +176,8 @@ func BuildImage(dockerFileReader io.Reader, imagename string) error {
 			Tags:        []string{imagename},
 			Context:     dockerBuildContext,
 			Dockerfile:  dockerFile.Name(),
-			Remove:      false,
-			ForceRemove: false,
+			Remove:      true,
+			ForceRemove: true,
 			NetworkMode: "host",
 			NoCache:     true,
 		},
