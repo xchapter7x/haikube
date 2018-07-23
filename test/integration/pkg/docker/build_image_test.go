@@ -19,7 +19,8 @@ func TestBuildImage(t *testing.T) {
 		}
 
 		testImageName := "myimage:1.2.3"
-		r := bytes.NewReader([]byte(`FROM busybox`))
+		r := bytes.NewReader([]byte(`FROM busybox
+RUN echo 'hi there'`))
 		err = dclient.BuildImage(r, testImageName)
 		if err != nil {
 			t.Fatalf("build image failed: %v", err)
@@ -29,7 +30,10 @@ func TestBuildImage(t *testing.T) {
 		defer func() {
 			if imageID != "" {
 				fmt.Println("cleaning up", imageID)
-				cli.ImageRemove(context.Background(), imageID, types.ImageRemoveOptions{Force: true})
+				_, err := cli.ImageRemove(context.Background(), imageID, types.ImageRemoveOptions{Force: true})
+				if err != nil {
+					t.Errorf("failed cleaning up test: %v", err)
+				}
 			}
 		}()
 

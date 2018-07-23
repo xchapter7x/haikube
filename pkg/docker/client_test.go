@@ -16,7 +16,7 @@ import (
 func TestDockerClient(t *testing.T) {
 	t.Run("Generate dockerfile", func(t *testing.T) {
 		t.Run("success", func(t *testing.T) {
-			rdr, cleanup, err := dclient.CreateDockerfile("abc", "ubuntu", "80", ".", make(map[string]string), fakeSuccessDownloader)
+			rdr, cleanup, err := dclient.CreateDockerfile("abc", "ubuntu", "80", ".", "echo hi", make(map[string]string), fakeSuccessDownloader)
 			defer cleanup()
 			if err != nil {
 				t.Fatalf("creating dockerfile failed: %v", err)
@@ -34,7 +34,7 @@ COPY . /app`)
 		})
 
 		t.Run("failure", func(t *testing.T) {
-			_, cleanup, err := dclient.CreateDockerfile("abc", "ubuntu", "80", ".", make(map[string]string), fakeFailureDownloader)
+			_, cleanup, err := dclient.CreateDockerfile("abc", "ubuntu", "80", ".", "echo hi", make(map[string]string), fakeFailureDownloader)
 			defer cleanup()
 			if err == nil {
 				t.Errorf("download failed but the creation didnt send error: %v", err)

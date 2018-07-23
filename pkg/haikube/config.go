@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	Name            string            `json:"name"`
+	Cmd             string            `json:"cmd"`
 	Image           string            `json:"image"`
 	Tag             string            `json:"tag"`
 	BaseImage       string            `json:"baseimage"`

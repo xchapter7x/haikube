@@ -23,6 +23,7 @@ func TestConfig(t *testing.T) {
 		t.Run("it has its fields populated", func(t *testing.T) {
 			for k, v := range map[string]string{
 				"name":       c.Name,
+				"cmd":        c.Cmd,
 				"image":      c.Image,
 				"tag":        c.Tag,
 				"base_image": c.BaseImage,

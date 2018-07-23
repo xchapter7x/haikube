@@ -18,6 +18,8 @@ import (
 	docker "docker.io/go-docker"
 	"docker.io/go-docker/api/types"
 	"github.com/jhoonb/archivex"
+	uuid "github.com/satori/go.uuid"
+	"k8s.io/client-go/util/homedir"
 )
 
 //PushImage - takes the image name as an argument in the format of
@@ -63,6 +65,89 @@ func PushImage(imageName string) error {
 	return nil
 }
 
+func HelmInstall(name, image, tag, port string) error {
+	kubeConfigPath := filepath.Join(homedir.HomeDir(), ".kube", "config")
+	kubeConfigReader, err := os.Open(kubeConfigPath)
+	if err != nil {
+		return fmt.Errorf("couldnt read file: %v", err)
+	}
+
+	config, err := ioutil.TempFile(".", "config")
+	if err != nil {
+		return fmt.Errorf("create tmp file: %v", err)
+	}
+
+	io.Copy(config, kubeConfigReader)
+	defer os.Remove(config.Name())
+	r := HelmInstallDockerfile(config.Name(), image, tag, name, port)
+	err = RunDockerfileInTmpImage(r)
+	if err != nil {
+		return fmt.Errorf("build image failed: %v", err)
+	}
+	return nil
+}
+
+func HelmInstallDockerfile(kubeConfigPath, repo, tag, name, port string) io.Reader {
+	fileBytes := []byte(
+		fmt.Sprintf(
+			dockerFileHelmInstall,
+			kubeConfigPath,
+			repo,
+			tag,
+			port,
+			name,
+			name,
+			repo,
+			tag,
+			port,
+		),
+	)
+	r := bytes.NewReader(fileBytes)
+	return r
+}
+
+// RunDockerfileInTmpImage - use a dockerfile as a script to run
+// in a tmp container
+func RunDockerfileInTmpImage(dockerFileReader io.Reader) error {
+	cli, err := docker.NewEnvClient()
+	if err != nil {
+		return fmt.Errorf("couldnt create client: %v", err)
+	}
+
+	guid, err := uuid.NewV4()
+	if err != nil {
+		return fmt.Errorf("failed generating a guid: %v", err)
+	}
+
+	testImageName := "haikube-runner:" + guid.String()
+	err = BuildImage(dockerFileReader, testImageName)
+	if err != nil {
+		return fmt.Errorf("build image failed: %v", err)
+	}
+
+	images, err := cli.ImageList(context.Background(), types.ImageListOptions{})
+	if err != nil {
+		return fmt.Errorf("unable to list images: %v", err)
+	}
+
+	for _, image := range images {
+		for _, tag := range image.RepoTags {
+			if tag == testImageName {
+				imageID := image.ID
+				fmt.Println("cleaning up", imageID)
+				_, err := cli.ImageRemove(context.Background(), imageID, types.ImageRemoveOptions{
+					PruneChildren: true,
+					Force:         false,
+				})
+				if err != nil {
+					return fmt.Errorf("failed to remove image: %v", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func BuildImage(dockerFileReader io.Reader, imagename string) error {
 	dockerFile, err := ioutil.TempFile(".", "Dockerfile")
 	io.Copy(dockerFile, dockerFileReader)
@@ -88,10 +173,13 @@ func BuildImage(dockerFileReader io.Reader, imagename string) error {
 		context.Background(),
 		dockerBuildContext,
 		types.ImageBuildOptions{
-			Tags:       []string{imagename},
-			Context:    dockerBuildContext,
-			Dockerfile: dockerFile.Name(),
-			Remove:     false,
+			Tags:        []string{imagename},
+			Context:     dockerBuildContext,
+			Dockerfile:  dockerFile.Name(),
+			Remove:      false,
+			ForceRemove: false,
+			NetworkMode: "host",
+			NoCache:     true,
 		},
 	)
 	defer func() {
@@ -120,15 +208,27 @@ func parseReader(rdr io.Reader) error {
 		}
 
 		m := struct {
+			Error       interface{} `json:"error"`
 			ErrorDetail interface{} `json:"errorDetail"`
 			Stream      interface{} `json:"stream"`
+			Aux         interface{} `json:"aux"`
 		}{}
 		json.Unmarshal(line, &m)
+		if m.Aux != nil {
+			fmt.Fprint(os.Stdout, m.Aux)
+		}
+
 		if m.Stream != nil {
 			fmt.Fprint(os.Stdout, m.Stream)
 		}
 
+		if m.Error != nil {
+			fmt.Fprint(os.Stdout, m.Error)
+			return fmt.Errorf(fmt.Sprint(m.Error))
+		}
+
 		if m.ErrorDetail != nil {
+			fmt.Fprint(os.Stdout, m.ErrorDetail)
 			return fmt.Errorf(fmt.Sprint(m.ErrorDetail))
 		}
 	}
@@ -143,7 +243,8 @@ func CreateDockerfile(
 	buildpackURI,
 	baseImage,
 	port,
-	codepath string,
+	codepath,
+	cmd string,
 	envmap map[string]string,
 	downloader func(string) (string, error),
 ) (io.Reader, func(), error) {
@@ -168,35 +269,32 @@ func CreateDockerfile(
 
 	var fileBytes []byte
 	if _, err := os.Stat(tempBuildpackUnzipped + "/bin/finalize"); os.IsNotExist(err) {
-		fileBytes = []byte(fmt.Sprintf(`
-FROM %s
-RUN mkdir /app /cache /deps || true
-WORKDIR /app
-COPY %s /app
-RUN mv %s /buildpack
-%s
-RUN /buildpack/bin/detect /app
-RUN /buildpack/bin/compile /app /cache
-RUN /buildpack/bin/release
-ENV PORT %s 
-EXPOSE %s
-`, baseImage, codepath, tempBuildpackUnzipped, dockerFileEnvCmdFromMap(envmap), port, port))
+		fileBytes = []byte(
+			fmt.Sprintf(
+				dockerFileBuildpackLegacy,
+				baseImage,
+				codepath,
+				tempBuildpackUnzipped,
+				dockerFileEnvCmdFromMap(envmap),
+				port,
+				port,
+				cmd,
+			),
+		)
 
 	} else {
-		fileBytes = []byte(fmt.Sprintf(`
-FROM %s
-RUN mkdir /app /cache /deps || true
-WORKDIR /app
-ADD %s /app 
-RUN mv %s /buildpack
-%s
-RUN /buildpack/bin/detect /app
-RUN /buildpack/bin/supply /app /cache /deps 0
-RUN /buildpack/bin/finalize /app /cache /deps 0
-RUN /buildpack/bin/release
-ENV PORT %s 
-EXPOSE %s
-`, baseImage, codepath, tempBuildpackUnzipped, dockerFileEnvCmdFromMap(envmap), port, port))
+		fileBytes = []byte(
+			fmt.Sprintf(
+				dockerFileBuildpackNew,
+				baseImage,
+				codepath,
+				tempBuildpackUnzipped,
+				dockerFileEnvCmdFromMap(envmap),
+				port,
+				port,
+				cmd,
+			),
+		)
 	}
 
 	r := bytes.NewReader(fileBytes)

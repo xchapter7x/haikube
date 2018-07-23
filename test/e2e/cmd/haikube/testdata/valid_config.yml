@@ -1,5 +1,6 @@
 ---
 name: unicornapp
+cmd: ./bin/main
 instances: 4
 image: xchapter7x/myapp
 tag: 1.0.0

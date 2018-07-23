@@ -8,7 +8,6 @@ import (
 
 	"github.com/xchapter7x/haikube/pkg/docker"
 	"github.com/xchapter7x/haikube/pkg/haikube"
-	"github.com/xchapter7x/haikube/pkg/k8s"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -68,18 +67,11 @@ func createDeployment(config string) error {
 	}
 
 	cfg.Parse(f)
-	client, err := k8s.NewDeploymentsClient("")
+	err = docker.HelmInstall(cfg.Name, cfg.Image, cfg.Tag, fmt.Sprint(cfg.Ports[0]))
 	if err != nil {
-		return fmt.Errorf("failed creating deployment: %v", err)
+		return fmt.Errorf("helm install failed: %v", err)
 	}
-
-	deployment := k8s.NewDeployment(
-		cfg.Name,
-		fmt.Sprintf("%s:%s", cfg.Image, cfg.Tag),
-		filepath.Base(cfg.Buildpack),
-		int32(cfg.Ports[0]),
-	)
-	return k8s.DeployApp(deployment, client)
+	return nil
 }
 
 func uploadDockerImage(config, source string) error {
@@ -127,6 +119,7 @@ func buildDockerImage(config, source string) (string, error) {
 		cfg.BaseImage,
 		fmt.Sprintf("%v", cfg.Ports[0]),
 		".",
+		cfg.Cmd,
 		cfg.Env,
 		docker.URIDownloader,
 	)

@@ -1,17 +1,21 @@
 package haikube_test
 
 import (
-	"log"
+	"bytes"
+	"fmt"
+	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
-	"github.com/xchapter7x/haikube/pkg/k8s"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/xchapter7x/haikube/pkg/docker"
+	"k8s.io/client-go/util/homedir"
 )
 
 func TestHaikube(t *testing.T) {
@@ -60,24 +64,14 @@ func TestHaikube(t *testing.T) {
 				t.Fatalf("failed running command: %v", err)
 			}
 
-			client, err := k8s.NewDeploymentsClient("")
-			if err != nil {
-				t.Fatalf("failed creating client: %v", err)
-			}
-
-			defer deploymentCleanup("unicornapp", client)
 			session.Wait(600 * time.Second)
 			if session.ExitCode() != 0 {
 				t.Errorf("call failed: %v %v %v", session.ExitCode(), string(session.Out.Contents()), string(session.Err.Contents()))
 			}
 
-			found, err := checkForDeploymentName(controlDeploymentName, client)
+			err = deleteHelmInstall(controlDeploymentName)
 			if err != nil {
 				t.Fatalf("check for deployment failed: %v", err)
-			}
-
-			if !found {
-				t.Errorf("didnt find deployment %s", controlDeploymentName)
 			}
 		})
 
@@ -89,48 +83,45 @@ func TestHaikube(t *testing.T) {
 				t.Fatalf("failed running command: %v", err)
 			}
 
-			client, err := k8s.NewDeploymentsClient("")
-			if err != nil {
-				t.Fatalf("failed creating client: %v", err)
-			}
-
-			defer deploymentCleanup("unicornapp", client)
 			session.Wait(600 * time.Second)
 			if session.ExitCode() != 0 {
 				t.Errorf("call failed: %v %v %v", session.ExitCode(), string(session.Out.Contents()), string(session.Err.Contents()))
 			}
 
-			found, err := checkForDeploymentName(controlDeploymentName, client)
+			err = deleteHelmInstall(controlDeploymentName)
 			if err != nil {
 				t.Fatalf("check for deployment failed: %v", err)
-			}
-
-			if !found {
-				t.Errorf("didnt find deployment %s", controlDeploymentName)
 			}
 		})
 	})
 }
 
-func checkForDeploymentName(name string, client k8s.DeploymentInterface) (bool, error) {
-	list, err := client.List(metav1.ListOptions{})
+func deleteHelmInstall(name string) error {
+	kubeConfigPath := filepath.Join(homedir.HomeDir(), ".kube", "config")
+	kubeConfigReader, err := os.Open(kubeConfigPath)
 	if err != nil {
-		return false, err
+		return fmt.Errorf("couldnt read file: %v", err)
 	}
-	found := false
-	for _, d := range list.Items {
-		if d.Name == name {
-			found = true
-		}
-	}
-	return found, nil
-}
 
-func deploymentCleanup(name string, client k8s.DeploymentInterface) {
-	deletePolicy := metav1.DeletePropagationForeground
-	if err := client.Delete(name, &metav1.DeleteOptions{
-		PropagationPolicy: &deletePolicy,
-	}); err != nil {
-		log.Fatalf("couldnt cleanup from test: %v", err)
+	config, err := ioutil.TempFile(".", "config")
+	if err != nil {
+		return fmt.Errorf("create tmp file: %v", err)
 	}
+
+	io.Copy(config, kubeConfigReader)
+	defer os.Remove(config.Name())
+	r := bytes.NewReader([]byte(`
+FROM dtzar/helm-kubectl
+WORKDIR /root
+COPY ` + config.Name() + ` /root/.kube/config 
+ENV KUBECONFIG /root/.kube/config
+RUN helm init 
+RUN helm ls | grep "` + name + `"
+RUN helm del ` + name + ` --purge 
+`))
+	err = docker.RunDockerfileInTmpImage(r)
+	if err != nil {
+		return fmt.Errorf("build image failed: %v", err)
+	}
+	return nil
 }
