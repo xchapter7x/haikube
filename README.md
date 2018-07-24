@@ -65,16 +65,20 @@ $ hk upload -c haikube.yml -s pathtosource
 name: unicornapp
 instances: 4
 image: xchapter7x/myapp
-cmd: ./bin/main
 tag: 1.0.0
-baseimage: cloudfoundry/cflinuxfs2
-buildpack: https://github.com/cloudfoundry/go-buildpack/releases/download/v1.8.22/go-buildpack-v1.8.22.zip
+cmd: ./bin/main
 ports:
   - 80
 env:
   CF_STACK: cflinuxfs2
   GOPACKAGENAME: main
 
+# optional: below is default
+baseimage: cloudfoundry/cflinuxfs2
+
+# in addition to a url to a zipped buildpack you can give a language
+# supported languages are: (binary,go,java,dotnetcore,node,php,python,ruby,staticfile,nginx)
+buildpack: https://github.com/cloudfoundry/go-buildpack/releases/download/v1.8.22/go-buildpack-v1.8.22.zip
 ```
 
 ## HK Usage
