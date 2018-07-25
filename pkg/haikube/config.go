@@ -9,17 +9,16 @@ import (
 )
 
 type Config struct {
-	Name            string            `json:"name"`
-	Cmd             string            `json:"cmd"`
-	Image           string            `json:"image"`
-	Tag             string            `json:"tag"`
-	BaseImage       string            `json:"baseimage"`
-	Buildpack       string            `json:"buildpack"`
-	Instances       int               `json:"instances"`
-	Ports           []int             `json:"ports"`
-	Env             map[string]string `json:"env"`
-	DeploymentPatch interface{}       `json:"deploymentpatch"`
-	ServicePatch    interface{}       `json:"servicepatch"`
+	Name       string                 `yaml:"name"`
+	Cmd        string                 `yaml:"cmd"`
+	Image      string                 `yaml:"image"`
+	Tag        string                 `yaml:"tag"`
+	BaseImage  string                 `yaml:"baseimage"`
+	Buildpack  string                 `yaml:"buildpack"`
+	Instances  int                    `yaml:"instances"`
+	Ports      []int                  `yaml:"ports"`
+	Env        map[string]string      `yaml:"env"`
+	HelmValues map[string]interface{} `yaml:"helm_values"`
 }
 
 var supportedBuildpacks = map[string]string{

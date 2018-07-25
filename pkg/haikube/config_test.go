@@ -5,10 +5,36 @@ import (
 	"os"
 	"testing"
 
+	"github.com/go-yaml/yaml"
 	"github.com/xchapter7x/haikube/pkg/haikube"
 )
 
 func TestConfig(t *testing.T) {
+	t.Run("parsing helm values", func(t *testing.T) {
+		controlYaml := `ingress:
+  enabled: false
+`
+		c := new(haikube.Config)
+		r := bytes.NewReader([]byte(`---
+buildpack: go 
+helm_values:
+  ingress:
+    enabled: false`))
+		err := c.Parse(r)
+		if err != nil {
+			t.Errorf("file parse failed %v", err)
+		}
+
+		b, err := yaml.Marshal(c.HelmValues)
+		if err != nil {
+			t.Errorf("failed getting helm yaml: %v", err)
+		}
+
+		if string(b) != controlYaml {
+			t.Errorf("the yaml \n'%s'\nshould match \n'%s'\n", string(b), controlYaml)
+		}
+	})
+
 	t.Run("parsing Buildpack", func(t *testing.T) {
 		t.Run("no base image defined", func(t *testing.T) {
 			controlBase := "cloudfoundry/cflinuxfs2"

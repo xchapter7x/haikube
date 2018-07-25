@@ -12,42 +12,37 @@ import (
 )
 
 var (
-	build           = kingpin.Command("build", "Build a container image from a buildpack and your code")
-	buildConfig     = build.Flag("config", "config file path").Short('c').Required().String()
-	buildSourceDir  = build.Flag("source", "path to your code").Short('s').Required().String()
-	upload          = kingpin.Command("upload", "Build & Push your image to dockerhub.")
-	uploadConfig    = upload.Flag("config", "config file path").Short('c').Required().String()
-	uploadSourceDir = upload.Flag("source", "path to your code").Short('s').Required().String()
-	deploy          = kingpin.Command("deploy", "Deploy your application container to kubernetes.")
-	deployConfig    = deploy.Flag("config", "config file path").Short('c').Required().String()
-	push            = kingpin.Command("push", "Build Push and Deploy your code")
-	pushConfig      = push.Flag("config", "config file path").Short('c').Required().String()
-	pushSourceDir   = push.Flag("source", "path to your code").Short('s').Required().String()
+	hkConfig    = kingpin.Flag("config", "config file path").Short('c').Default(".haikube.yml").String()
+	hkSourceDir = kingpin.Flag("source", "path to your code").Short('s').Default(".").String()
+	build       = kingpin.Command("build", "Build a container image from a buildpack and your code")
+	upload      = kingpin.Command("upload", "Build & Push your image to dockerhub.")
+	deploy      = kingpin.Command("deploy", "Deploy your application container to kubernetes.")
+	push        = kingpin.Command("push", "Build Push and Deploy your code")
 )
 
 func main() {
 	switch kingpin.Parse() {
 	case build.FullCommand():
-		_, err := buildDockerImage(*buildConfig, *buildSourceDir)
+		_, err := buildDockerImage(*hkConfig, *hkSourceDir)
 		if err != nil {
 			log.Panicf("buildDockerImage failed: %v", err)
 		}
 	case upload.FullCommand():
-		err := uploadDockerImage(*uploadConfig, *uploadSourceDir)
+		err := uploadDockerImage(*hkConfig, *hkSourceDir)
 		if err != nil {
 			log.Panicf("uploadDockerImage failed: %v", err)
 		}
 	case deploy.FullCommand():
-		err := createDeployment(*deployConfig)
+		err := createDeployment(*hkConfig)
 		if err != nil {
 			log.Panicf("create deployment failed: %v", err)
 		}
 	case push.FullCommand():
-		err := uploadDockerImage(*pushConfig, *pushSourceDir)
+		err := uploadDockerImage(*hkConfig, *hkSourceDir)
 		if err != nil {
 			log.Panicf("uploadDockerImage failed: %v", err)
 		}
-		err = createDeployment(*pushConfig)
+		err = createDeployment(*hkConfig)
 		if err != nil {
 			log.Panicf("create deployment failed: %v", err)
 		}
