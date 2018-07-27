@@ -74,14 +74,14 @@ func HelmInstall(name, image, tag, port string, helmValues map[string]interface{
 	}
 
 	config, err := ioutil.TempFile(".", "config")
+	defer os.Remove(config.Name())
 	if err != nil {
 		return fmt.Errorf("create tmp file: %v", err)
 	}
 
 	io.Copy(config, kubeConfigReader)
-	defer os.Remove(config.Name())
-
 	helmValuesFile, err := ioutil.TempFile(".", "helm_values")
+	defer os.Remove(helmValuesFile.Name())
 	if err != nil {
 		return fmt.Errorf("create helm values file: %v", err)
 	}
@@ -92,8 +92,6 @@ func HelmInstall(name, image, tag, port string, helmValues map[string]interface{
 	}
 
 	io.Copy(helmValuesFile, bytes.NewReader(helmValuesBytes))
-	defer os.Remove(config.Name())
-
 	r := HelmInstallDockerfile(config.Name(), helmValuesFile.Name(), image, tag, name, port)
 	err = RunDockerfileInTmpImage(r)
 	if err != nil {
