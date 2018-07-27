@@ -142,9 +142,10 @@ $ make dep
 ```
 
 ## Missing Functionality
-- Instance count still needs to take effect in helm installation
-- Does not yet allow for configuration of helm chart used 
 - Does not yet allow for deployment of private container images
+- support KUBECONFIG var
+- tag deployment with haikue buildpack and git meta data
+- configure alternative helm charts for app installation
 - ... Lots missing, this project is only a few days old :)
 
 ## Similar tools in the space
