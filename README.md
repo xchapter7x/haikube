@@ -59,7 +59,7 @@ $ hk build -c haikube.yml -s pathtosource
 $ hk upload -c haikube.yml -s pathtosource
 ```
 
-### sample .haikube.yaml
+### sample .haikube.yml
 
 ```yaml
 ---
