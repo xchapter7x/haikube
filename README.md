@@ -77,8 +77,9 @@ env:
 baseimage: cloudfoundry/cflinuxfs2
 
 # in addition to a url to a zipped buildpack you can give a language
+# example url: https://github.com/cloudfoundry/go-buildpack/releases/download/v1.8.22/go-buildpack-v1.8.22.zip
 # supported languages are: (binary,go,java,dotnetcore,node,php,python,ruby,staticfile,nginx)
-buildpack: https://github.com/cloudfoundry/go-buildpack/releases/download/v1.8.22/go-buildpack-v1.8.22.zip
+buildpack: go 
 
 # you can pass anything from a helm values.yml file under this element
 helm_values:
