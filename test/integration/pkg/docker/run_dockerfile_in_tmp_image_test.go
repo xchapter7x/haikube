@@ -38,7 +38,7 @@ RUN echo 'yo yo yo'`))
 		}
 		controlName := strings.ToLower("hktest-" + guid.String())
 
-		err = dclient.HelmInstall(controlName, "nginx", "1.15.1", fmt.Sprint(80))
+		err = dclient.HelmInstall(controlName, "nginx", "1.15.1", fmt.Sprint(80), nil)
 		if err != nil {
 			t.Errorf("helm install failed: %v", err)
 		}
