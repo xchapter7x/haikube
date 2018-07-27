@@ -1,0 +1,16 @@
+---
+name: example-goapp 
+cmd: ./bin/main
+image: xchapter7x/myapp
+tag: 1.0.0
+buildpack: go 
+ports:
+  - 8080
+env:
+  CF_STACK: cflinuxfs2
+  GOPACKAGENAME: main
+helm_values:
+  replicaCount: 4
+  ingress:
+    enabled: true
+  basedomain: localhost.com
