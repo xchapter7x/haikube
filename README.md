@@ -63,10 +63,9 @@ $ hk upload -c haikube.yml -s pathtosource
 ```yaml
 ---
 name: unicornapp
-instances: 4
+cmd: ./bin/main
 image: xchapter7x/myapp
 tag: 1.0.0
-cmd: ./bin/main
 ports:
   - 80
 env:
@@ -82,8 +81,10 @@ buildpack: https://github.com/cloudfoundry/go-buildpack/releases/download/v1.8.2
 
 # you can pass anything from a helm values.yml file under this element
 helm_values:
+  replicaCount: 4
   ingress:
-    enabled: false 
+    enabled: true
+  basedomain: localhost.com
 ```
 
 ## HK Usage

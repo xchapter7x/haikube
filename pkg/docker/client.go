@@ -19,6 +19,7 @@ import (
 	"docker.io/go-docker/api/types"
 	"github.com/jhoonb/archivex"
 	uuid "github.com/satori/go.uuid"
+	yaml "gopkg.in/yaml.v2"
 	"k8s.io/client-go/util/homedir"
 )
 
@@ -65,7 +66,7 @@ func PushImage(imageName string) error {
 	return nil
 }
 
-func HelmInstall(name, image, tag, port string) error {
+func HelmInstall(name, image, tag, port string, helmValues map[string]interface{}) error {
 	kubeConfigPath := filepath.Join(homedir.HomeDir(), ".kube", "config")
 	kubeConfigReader, err := os.Open(kubeConfigPath)
 	if err != nil {
@@ -79,7 +80,21 @@ func HelmInstall(name, image, tag, port string) error {
 
 	io.Copy(config, kubeConfigReader)
 	defer os.Remove(config.Name())
-	r := HelmInstallDockerfile(config.Name(), image, tag, name, port)
+
+	helmValuesFile, err := ioutil.TempFile(".", "helm_values")
+	if err != nil {
+		return fmt.Errorf("create helm values file: %v", err)
+	}
+
+	helmValuesBytes, err := yaml.Marshal(helmValues)
+	if err != nil {
+		return fmt.Errorf("failed getting helm yaml: %v", err)
+	}
+
+	io.Copy(helmValuesFile, bytes.NewReader(helmValuesBytes))
+	defer os.Remove(config.Name())
+
+	r := HelmInstallDockerfile(config.Name(), helmValuesFile.Name(), image, tag, name, port)
 	err = RunDockerfileInTmpImage(r)
 	if err != nil {
 		return fmt.Errorf("build image failed: %v", err)
@@ -87,11 +102,12 @@ func HelmInstall(name, image, tag, port string) error {
 	return nil
 }
 
-func HelmInstallDockerfile(kubeConfigPath, repo, tag, name, port string) io.Reader {
+func HelmInstallDockerfile(kubeConfigPath, valuesYamlPath, repo, tag, name, port string) io.Reader {
 	fileBytes := []byte(
 		fmt.Sprintf(
 			dockerFileHelmInstall,
 			kubeConfigPath,
+			valuesYamlPath,
 			repo,
 			tag,
 			port,

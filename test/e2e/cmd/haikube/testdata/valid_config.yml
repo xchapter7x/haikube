@@ -1,7 +1,6 @@
 ---
 name: unicornapp
 cmd: ./bin/main
-instances: 4
 image: xchapter7x/myapp
 tag: 1.0.0
 baseimage: cloudfoundry/cflinuxfs2
@@ -11,3 +10,8 @@ ports:
 env:
   CF_STACK: cflinuxfs2
   GOPACKAGENAME: main
+helm_values:
+  replicaCount: 4
+  ingress:
+    enabled: true
+  basedomain: localhost.com

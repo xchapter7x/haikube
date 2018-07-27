@@ -50,6 +50,7 @@ func main() {
 }
 
 func createDeployment(config string) error {
+	fmt.Println("preparing to install your application on kubernetes")
 	cfg := new(haikube.Config)
 	yamlFilePath, err := filepath.Abs(config)
 	if err != nil {
@@ -62,7 +63,7 @@ func createDeployment(config string) error {
 	}
 
 	cfg.Parse(f)
-	err = docker.HelmInstall(cfg.Name, cfg.Image, cfg.Tag, fmt.Sprint(cfg.Ports[0]))
+	err = docker.HelmInstall(cfg.Name, cfg.Image, cfg.Tag, fmt.Sprint(cfg.Ports[0]), cfg.HelmValues)
 	if err != nil {
 		return fmt.Errorf("helm install failed: %v", err)
 	}
@@ -70,6 +71,7 @@ func createDeployment(config string) error {
 }
 
 func uploadDockerImage(config, source string) error {
+	fmt.Println("Uploading your image to docker registry")
 	imageName, err := buildDockerImage(config, source)
 	if err != nil {
 		return fmt.Errorf("failed building image: %v", err)
