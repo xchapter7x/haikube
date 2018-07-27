@@ -30,6 +30,7 @@ i do not care how
 - haikube can use any dockerhost its configured for to build the container images
 - haikube can store the container image in dockerhub by default, but can be configured to use any docker registry
 - haikube can install a helm chart (deployment, service, ingress) using the created docker image
+- haikube allows the user to define helm values in the haikube.yml
 
 ## features
 - `build`: build your container using a buildpack
