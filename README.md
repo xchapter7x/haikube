@@ -73,9 +73,6 @@ env:
   CF_STACK: cflinuxfs2
   GOPACKAGENAME: main
 
-# optional: below is default
-baseimage: cloudfoundry/cflinuxfs2
-
 # in addition to a url to a zipped buildpack you can give a language
 # example url: https://github.com/cloudfoundry/go-buildpack/releases/download/v1.8.22/go-buildpack-v1.8.22.zip
 # supported languages are: (binary,go,java,dotnetcore,node,php,python,ruby,staticfile,nginx)
@@ -87,6 +84,9 @@ helm_values:
   ingress:
     enabled: true
   basedomain: localhost.com
+  
+# optional: below is default
+baseimage: cloudfoundry/cflinuxfs2
 ```
 
 ## HK Usage
