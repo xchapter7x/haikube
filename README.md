@@ -1,15 +1,15 @@
 # HaikuBe
-### If you like the Cloud Foundry and Heroku 'push' experiences, but are using Kubernetes, try this!
+## Summary: What's this do?
+- create docker images from just code (no dockerfiles)
+- deploy to kubernetes from just a docker image (no k8s manifests, no helm charts)
 
 ---
 
 
 [![CircleCI](https://circleci.com/gh/xchapter7x/haikube/tree/master.svg?style=svg)](https://circleci.com/gh/xchapter7x/haikube/tree/master)
 
-## Summary: What's this do?
-- create docker images from just code (no dockerfiles)
-- deploy to kubernetes from just a docker image (no k8s manifests, no helm charts)
 
+### If you like the Cloud Foundry and Heroku 'push' experiences, but are using Kubernetes, try this!
 
 Inspired by the haiku, but made for kubernetes.
 So, (Haiku) meet (Kube)rnetes in Haikube
