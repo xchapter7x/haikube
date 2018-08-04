@@ -9,8 +9,7 @@ COPY %s /root/values-haikube.yml
 ENV KUBECONFIG /root/.kube/config
 RUN helm init 
 RUN cat values-haikube.yml
-RUN helm install https://github.com/xchapter7x/haikube-chart/releases/download/v0.0.1/default.tgz --set image.repository=%s,image.tag=%s,service.internalPort=%s -n %s -f values-haikube.yml || \
-helm upgrade %s https://github.com/xchapter7x/haikube-chart/releases/download/v0.0.1/default.tgz --set image.repository=%s,image.tag=%s,service.internalPort=%s -f values-haikube.yml
+RUN helm upgrade %s https://github.com/xchapter7x/haikube-chart/releases/download/v0.0.1/default.tgz --set image.repository=%s,image.tag=%s,service.internalPort=%s -f values-haikube.yml -i
 RUN helm ls
 `
 	dockerFileBuildpackLegacy = `
