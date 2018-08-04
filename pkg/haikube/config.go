@@ -15,7 +15,6 @@ type Config struct {
 	Tag        string                 `yaml:"tag"`
 	BaseImage  string                 `yaml:"baseimage"`
 	Buildpack  string                 `yaml:"buildpack"`
-	Instances  int                    `yaml:"instances"`
 	Ports      []int                  `yaml:"ports"`
 	Env        map[string]string      `yaml:"env"`
 	HelmValues map[string]interface{} `yaml:"helm_values"`
