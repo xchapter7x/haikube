@@ -6,6 +6,11 @@
 
 [![CircleCI](https://circleci.com/gh/xchapter7x/haikube/tree/master.svg?style=svg)](https://circleci.com/gh/xchapter7x/haikube/tree/master)
 
+## Summary: What's this do?
+- create docker images from just code (no dockerfiles)
+- deploy to kubernetes, just bring your image (no k8s manifests, no helm charts)
+
+
 Inspired by the haiku, but made for kubernetes.
 So, (Haiku) meet (Kube)rnetes in Haikube
 
