@@ -1,7 +1,7 @@
 # HaikuBe
-## Summary: What's this do?
-- create docker images from just code (no dockerfiles)
-- deploy to kubernetes from just a docker image (no k8s manifests, no helm charts)
+## What's this do?
+- create docker images from just your code (no dockerfiles needed)
+- deploy to kubernetes from just your docker image (no k8s manifests, no helm charts needed)
 
 ---
 
