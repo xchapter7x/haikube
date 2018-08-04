@@ -9,10 +9,14 @@ import (
 )
 
 type Config struct {
-	Name       string                 `yaml:"name"`
-	Cmd        string                 `yaml:"cmd"`
-	Image      string                 `yaml:"image"`
-	Tag        string                 `yaml:"tag"`
+	Name   string `yaml:"name"`
+	Cmd    string `yaml:"cmd"`
+	Image  string `yaml:"image"`
+	Tag    string `yaml:"tag"`
+	Tiller struct {
+		TillerNamespace string `yaml:"tiller_namespace"`
+		Namespace       string `yaml:"namespace"`
+	} `yaml:"tiller"`
 	BaseImage  string                 `yaml:"baseimage"`
 	Buildpack  string                 `yaml:"buildpack"`
 	Ports      []int                  `yaml:"ports"`

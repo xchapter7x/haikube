@@ -102,16 +102,20 @@ helm_values:
 
 		t.Run("it has its fields populated", func(t *testing.T) {
 			for k, v := range map[string]string{
-				"name":       c.Name,
-				"cmd":        c.Cmd,
-				"image":      c.Image,
-				"tag":        c.Tag,
-				"base_image": c.BaseImage,
-				"buildpack":  c.Buildpack,
+				"name":                   c.Name,
+				"cmd":                    c.Cmd,
+				"image":                  c.Image,
+				"tiller.TillerNamespace": c.Tiller.TillerNamespace,
+				"tiller.Namespace":       c.Tiller.Namespace,
+				"tag":                    c.Tag,
+				"base_image":             c.BaseImage,
+				"buildpack":              c.Buildpack,
 			} {
-				if v == "" {
-					t.Errorf("empty value set in object %v:%v", k, v)
-				}
+				t.Run("for field/"+k, func(t *testing.T) {
+					if v == "" {
+						t.Errorf("empty value set in object %v:%v", k, v)
+					}
+				})
 			}
 		})
 	})
