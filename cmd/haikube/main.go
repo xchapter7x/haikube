@@ -12,16 +12,24 @@ import (
 )
 
 var (
+	Version     = "dev-build"
+	Buildtime   = "sometime"
+	Platform    = "somecomputer"
 	hkConfig    = kingpin.Flag("config", "config file path").Short('c').Default(".haikube.yml").String()
 	hkSourceDir = kingpin.Flag("source", "path to your code").Short('s').Default(".").String()
 	build       = kingpin.Command("build", "Build a container image from a buildpack and your code")
 	upload      = kingpin.Command("upload", "Build & Push your image to dockerhub.")
 	deploy      = kingpin.Command("deploy", "Deploy your application container to kubernetes.")
 	push        = kingpin.Command("push", "Build Push and Deploy your code")
+	version     = kingpin.Command("version", "display version of haikube")
 )
 
 func main() {
 	switch kingpin.Parse() {
+	case version.FullCommand():
+		fmt.Printf("Version: %s\n", Version)
+		fmt.Printf("Built On: %s\n", Buildtime)
+		fmt.Printf("Platform: %s\n", Platform)
 	case build.FullCommand():
 		_, err := buildDockerImage(*hkConfig, *hkSourceDir)
 		if err != nil {
