@@ -8,7 +8,7 @@
 
 ## Summary: What's this do?
 - create docker images from just code (no dockerfiles)
-- deploy to kubernetes, just bring your image (no k8s manifests, no helm charts)
+- deploy to kubernetes from just a docker image (no k8s manifests, no helm charts)
 
 
 Inspired by the haiku, but made for kubernetes.
