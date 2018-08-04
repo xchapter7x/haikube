@@ -3,13 +3,11 @@
 - create docker images from just your code (no dockerfiles needed)
 - deploy to kubernetes from just your docker image (no k8s manifests, no helm charts needed)
 
+### If you like the Cloud Foundry and Heroku 'push' experiences, but are using Kubernetes, try this!
+
 ---
 
-
 [![CircleCI](https://circleci.com/gh/xchapter7x/haikube/tree/master.svg?style=svg)](https://circleci.com/gh/xchapter7x/haikube/tree/master)
-
-
-### If you like the Cloud Foundry and Heroku 'push' experiences, but are using Kubernetes, try this!
 
 Inspired by the haiku, but made for kubernetes.
 So, (Haiku) meet (Kube)rnetes in Haikube
